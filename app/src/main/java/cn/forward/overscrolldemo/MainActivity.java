@@ -1,50 +1,46 @@
 package cn.forward.overscrolldemo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-
-import cn.forward.overscroll.IOffsetChangeListener;
-import cn.forward.overscroll.IOverScrollView;
+import android.support.design.widget.TabLayout;
+import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_overscroll);
+        setContentView(R.layout.activity_main);
 
-        final View iconHeaderView = findViewById(R.id.icon_header);
-        final View iconFooterView = findViewById(R.id.icon_footer);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
 
-        IOverScrollView overScrollView = findViewById(R.id.overscroll_view);
-        overScrollView.addOffsetChangeListener(new IOffsetChangeListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onOffsetChanged(View child, int offset) {
-                if (child.getHeight() == 0) {
-                    return;
-                }
-
-                int absOffset = Math.abs(offset);
-                float scale = 3 * absOffset * 1f / child.getHeight();
-                if (offset >= 0) {
-                    iconHeaderView.setPivotX(child.getWidth() / 2);
-                    iconHeaderView.setPivotY(0);
-                    iconHeaderView.setScaleX(scale);
-                    iconHeaderView.setScaleY(scale);
-
-                    iconFooterView.setScaleX(0);
-                    iconFooterView.setScaleY(0);
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new VerticalRecyclerViewFragment())
+                            .commitAllowingStateLoss();
                 } else {
-                    iconFooterView.setPivotX(child.getWidth() / 2);
-                    iconFooterView.setPivotY(0);
-                    iconFooterView.setScaleX(scale);
-                    iconFooterView.setScaleY(scale);
-
-                    iconHeaderView.setScaleX(0);
-                    iconHeaderView.setScaleY(0);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new ScrollViewFragment())
+                            .commitAllowingStateLoss();
                 }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, new VerticalRecyclerViewFragment())
+                .commitAllowingStateLoss();
+
     }
 }

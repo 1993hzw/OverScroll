@@ -13,6 +13,7 @@ import android.widget.OverScroller;
 
 /**
  * 利用CoordinatorLayout+Behavior实现类似微信首页的弹性滑动和惯性滑动效果
+ *
  * @author ziwei huang
  */
 public class OverScrollBehavior extends CoordinatorLayout.Behavior<View> {
@@ -185,7 +186,6 @@ public class OverScrollBehavior extends CoordinatorLayout.Behavior<View> {
     }
 
     /**
-     *
      * @return 消耗掉距离
      */
     private int computerOffset(View child, int newOffset,

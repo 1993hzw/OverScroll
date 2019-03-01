@@ -22,7 +22,7 @@ import cn.forward.overscroll.SimpleOverScrollListener;
  * @author ziwei huang
  */
 @CoordinatorLayout.DefaultBehavior(OverScrollBehavior.class)
-public class OverScrollHorizontalRecyclerView extends RecyclerView implements IOverScrollListener, IOverScrollView {
+public class OverScrollVerticalRecyclerView extends RecyclerView implements IOverScrollListener, IOverScrollView {
 
     private List<IOffsetChangeListener> mOffsetChangeListeners;
     private IOverScrollListener mDefaultOverScrollListener = new SimpleOverScrollListener();
@@ -30,15 +30,15 @@ public class OverScrollHorizontalRecyclerView extends RecyclerView implements IO
 
     private int mOverScrollOffset;
 
-    public OverScrollHorizontalRecyclerView(Context context) {
+    public OverScrollVerticalRecyclerView(Context context) {
         super(context);
     }
 
-    public OverScrollHorizontalRecyclerView(Context context, AttributeSet attrs) {
+    public OverScrollVerticalRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public OverScrollHorizontalRecyclerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public OverScrollVerticalRecyclerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
