@@ -12,13 +12,13 @@ import java.util.List;
 import cn.forward.overscroll.IOffsetChangeListener;
 import cn.forward.overscroll.IOverScrollListener;
 import cn.forward.overscroll.IOverScrollView;
-import cn.forward.overscroll.OverScrollBehavior;
+import cn.forward.overscroll.OverScrollVerticalBehavior;
 import cn.forward.overscroll.SimpleOverScrollListener;
 
 /**
  * @author ziwei huang
  */
-@CoordinatorLayout.DefaultBehavior(OverScrollBehavior.class)
+@CoordinatorLayout.DefaultBehavior(OverScrollVerticalBehavior.class)
 public class OverScrollScrollView extends NestedScrollView implements IOverScrollListener, IOverScrollView {
 
     private List<IOffsetChangeListener> mOffsetChangeListeners;

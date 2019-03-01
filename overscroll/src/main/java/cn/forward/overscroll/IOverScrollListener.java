@@ -16,6 +16,8 @@ public interface IOverScrollListener {
 
     public static final int DIRECTION_UP = 1 << 0;
     public static final int DIRECTION_DOWN = 1 << 1;
+    public static final int DIRECTION_LEFT = 1 << 2;
+    public static final int DIRECTION_RIGHT = 1 << 3;
 
     /**
      * @param child           the child view of the CoordinatorLayout this Behavior is associated with. 跟当前behavior绑定的CoordinatorLayout的子view
@@ -46,11 +48,11 @@ public interface IOverScrollListener {
     float getDampingFactor(View child, int offset, @ScrollDirection int scrollDirection);
 
     /**
-     * 产生惯性滑动的最小速度，小于该速度时会停止惯性滑动
+     * 产生惯性滑动的最小速度(取绝对值)，小于该速度时会停止惯性滑动.
      * @param child
      * @param offset
      * @param scrollDirection
-     * @return Minimum velocity to occur a fling,  in pixels per second. If the velocity is less than the min, the child view will stop the fling
+     * @return Minimum velocity (the absolute value) to occur a fling,  in pixels per second. If the velocity is less than the min, the child view will stop the fling
      */
     int getMinFlingVelocity(View child, int offset, @ScrollDirection int scrollDirection);
 

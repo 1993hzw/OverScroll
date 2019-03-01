@@ -12,6 +12,7 @@ import java.util.List;
 import cn.forward.overscroll.IOffsetChangeListener;
 import cn.forward.overscroll.IOverScrollListener;
 import cn.forward.overscroll.IOverScrollView;
+import cn.forward.overscroll.OverScrollHorizontalBehavior;
 import cn.forward.overscroll.OverScrollVerticalBehavior;
 import cn.forward.overscroll.SimpleOverScrollListener;
 
@@ -20,8 +21,8 @@ import cn.forward.overscroll.SimpleOverScrollListener;
  * over scrolling horizontally for RecyclerView
  * @author ziwei huang
  */
-@CoordinatorLayout.DefaultBehavior(OverScrollVerticalBehavior.class)
-public class OverScrollVerticalRecyclerView extends RecyclerView implements IOverScrollListener, IOverScrollView {
+@CoordinatorLayout.DefaultBehavior(OverScrollHorizontalBehavior.class)
+public class OverScrollHorizontalRecyclerView extends RecyclerView implements IOverScrollListener, IOverScrollView {
 
     private List<IOffsetChangeListener> mOffsetChangeListeners;
     private IOverScrollListener mDefaultOverScrollListener = new SimpleOverScrollListener();
@@ -29,15 +30,15 @@ public class OverScrollVerticalRecyclerView extends RecyclerView implements IOve
 
     private int mOverScrollOffset;
 
-    public OverScrollVerticalRecyclerView(Context context) {
+    public OverScrollHorizontalRecyclerView(Context context) {
         super(context);
     }
 
-    public OverScrollVerticalRecyclerView(Context context, AttributeSet attrs) {
+    public OverScrollHorizontalRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public OverScrollVerticalRecyclerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public OverScrollHorizontalRecyclerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

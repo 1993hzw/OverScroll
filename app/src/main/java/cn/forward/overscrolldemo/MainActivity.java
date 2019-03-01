@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
                             .commitAllowingStateLoss();
                 } else {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, new ScrollViewFragment())
+                            .replace(R.id.container, new HorizontalRecyclerViewFragment())
                             .commitAllowingStateLoss();
                 }
 

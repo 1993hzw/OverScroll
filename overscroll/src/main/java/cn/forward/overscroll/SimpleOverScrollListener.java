@@ -18,7 +18,7 @@ public class SimpleOverScrollListener implements IOverScrollListener {
 
     @Override
     public int getMaxFlingOffset(View child, int offset, @ScrollDirection int scrollDirection) {
-        if (scrollDirection == DIRECTION_DOWN) {
+        if (scrollDirection == DIRECTION_DOWN || scrollDirection == DIRECTION_RIGHT) {
             return child.getHeight() / 3;
         } else {
             return -child.getHeight() / 3;
@@ -35,7 +35,7 @@ public class SimpleOverScrollListener implements IOverScrollListener {
     @Override
     public int getMinFlingVelocity(View child, int offset, int scrollDirection) {
         if (mMinFlingVelocity <= 0) {
-            mMinFlingVelocity = ViewConfiguration.get(child.getContext()).getScaledMinimumFlingVelocity() * 20;
+            mMinFlingVelocity = ViewConfiguration.get(child.getContext()).getScaledMinimumFlingVelocity() * 18;
         }
         return mMinFlingVelocity;
     }
