@@ -60,6 +60,8 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
             mDirectionToEnd = IOverScrollListener.DIRECTION_RIGHT;
             mDirectionToStart = IOverScrollListener.DIRECTION_LEFT;
         }
+
+        coordinatorLayout.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override

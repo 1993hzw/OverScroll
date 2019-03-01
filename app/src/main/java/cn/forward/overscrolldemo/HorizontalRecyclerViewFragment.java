@@ -18,15 +18,17 @@ import cn.forward.overscroll.IOverScrollView;
  */
 public class HorizontalRecyclerViewFragment extends Fragment {
 
-    public static int[] COLORS = new int[]{0xffff0000, 0xff00ff00, 0xff0000ff, 0xff00ffff, 0xffffff00, 0xffff00ff};
+    public static int[] COLORS = new int[]{0xff00ff00, 0xffffffff, 0xff00ffff, 0xffffff00, 0xffff00ff, 0xff8FBC8F};
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
         View view = inflater.inflate(R.layout.activity_recyclerview_horizontal, container, false);
+        initHorizontal(view);
+        return view;
+    }
 
+    public static void initHorizontal(View view) {
         final View iconHeaderView = view.findViewById(R.id.icon_header);
         final View iconFooterView = view.findViewById(R.id.icon_footer);
 
@@ -42,15 +44,15 @@ public class HorizontalRecyclerViewFragment extends Fragment {
                 float scale = 3 * absOffset * 1f / child.getHeight();
                 if (offset >= 0) {
                     iconHeaderView.setPivotX(0);
-                    iconHeaderView.setPivotY(child.getHeight() / 2);
+                    iconHeaderView.setPivotY(iconHeaderView.getHeight() / 2);
                     iconHeaderView.setScaleX(scale);
                     iconHeaderView.setScaleY(scale);
 
                     iconFooterView.setScaleX(0);
                     iconFooterView.setScaleY(0);
                 } else {
-                    iconHeaderView.setPivotX(0);
-                    iconHeaderView.setPivotY(child.getHeight() / 2);
+                    iconFooterView.setPivotX(iconFooterView.getWidth());
+                    iconFooterView.setPivotY(iconFooterView.getHeight() / 2);
                     iconFooterView.setScaleX(scale);
                     iconFooterView.setScaleY(scale);
 
@@ -62,7 +64,7 @@ public class HorizontalRecyclerViewFragment extends Fragment {
 
 
         RecyclerView recyclerView = view.findViewById(R.id.overscroll_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new RecyclerView.Adapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -87,6 +89,5 @@ public class HorizontalRecyclerViewFragment extends Fragment {
             }
         });
 
-        return view;
     }
 }

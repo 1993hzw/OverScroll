@@ -41,7 +41,7 @@ public class VerticalRecyclerViewFragment extends Fragment {
                 int absOffset = Math.abs(offset);
                 float scale = 3 * absOffset * 1f / child.getHeight();
                 if (offset >= 0) {
-                    iconHeaderView.setPivotX(child.getWidth() / 2);
+                    iconHeaderView.setPivotX(iconHeaderView.getWidth() / 2);
                     iconHeaderView.setPivotY(0);
                     iconHeaderView.setScaleX(scale);
                     iconHeaderView.setScaleY(scale);
@@ -49,8 +49,8 @@ public class VerticalRecyclerViewFragment extends Fragment {
                     iconFooterView.setScaleX(0);
                     iconFooterView.setScaleY(0);
                 } else {
-                    iconFooterView.setPivotX(child.getWidth() / 2);
-                    iconFooterView.setPivotY(0);
+                    iconFooterView.setPivotX(iconFooterView.getWidth() / 2);
+                    iconFooterView.setPivotY(iconFooterView.getHeight());
                     iconFooterView.setScaleX(scale);
                     iconFooterView.setScaleY(scale);
 

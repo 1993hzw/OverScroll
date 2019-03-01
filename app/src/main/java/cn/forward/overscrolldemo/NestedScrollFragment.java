@@ -13,12 +13,10 @@ import cn.forward.overscroll.IOverScrollView;
 /**
  * @author ziwei huang
  */
-public class ScrollViewFragment extends Fragment {
-
+public class NestedScrollFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
 
         View view = inflater.inflate(R.layout.activity_scrollview, container, false);
 
@@ -36,7 +34,7 @@ public class ScrollViewFragment extends Fragment {
                 int absOffset = Math.abs(offset);
                 float scale = 3 * absOffset * 1f / child.getHeight();
                 if (offset >= 0) {
-                    iconHeaderView.setPivotX(child.getWidth() / 2);
+                    iconHeaderView.setPivotX(iconHeaderView.getWidth() / 2);
                     iconHeaderView.setPivotY(0);
                     iconHeaderView.setScaleX(scale);
                     iconHeaderView.setScaleY(scale);
@@ -44,8 +42,8 @@ public class ScrollViewFragment extends Fragment {
                     iconFooterView.setScaleX(0);
                     iconFooterView.setScaleY(0);
                 } else {
-                    iconFooterView.setPivotX(child.getWidth() / 2);
-                    iconFooterView.setPivotY(0);
+                    iconFooterView.setPivotX(iconFooterView.getWidth() / 2);
+                    iconFooterView.setPivotY(iconFooterView.getHeight());
                     iconFooterView.setScaleX(scale);
                     iconFooterView.setScaleY(scale);
 
@@ -55,6 +53,10 @@ public class ScrollViewFragment extends Fragment {
             }
         });
 
+        HorizontalRecyclerViewFragment.initHorizontal(view.findViewById(R.id.horizontal_view));
+
         return view;
     }
+
+
 }

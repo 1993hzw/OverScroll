@@ -20,9 +20,13 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, new VerticalRecyclerViewFragment())
                             .commitAllowingStateLoss();
-                } else {
+                } else if (tab.getPosition() == 1) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container, new HorizontalRecyclerViewFragment())
+                            .commitAllowingStateLoss();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new NestedScrollFragment())
                             .commitAllowingStateLoss();
                 }
 

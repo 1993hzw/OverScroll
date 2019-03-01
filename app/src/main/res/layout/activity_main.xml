@@ -29,6 +29,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="水平滚动" />
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="嵌套滚动" />
     </android.support.design.widget.TabLayout>
 
 </LinearLayout>

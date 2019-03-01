@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
-            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:src="@mipmap/ic_launcher" />
     </FrameLayout>
 
@@ -50,19 +50,11 @@
                     android:textSize="36dp" />
             </FrameLayout>
 
-            <FrameLayout
+            <include
+                android:id="@+id/horizontal_view"
+                layout="@layout/activity_recyclerview_horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="#0f0">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="2"
-                    android:textColor="#000"
-                    android:textSize="36dp" />
-            </FrameLayout>
+                android:layout_height="200dp" />
 
             <FrameLayout
                 android:layout_width="match_parent"
