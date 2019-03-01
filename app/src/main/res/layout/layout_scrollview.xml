@@ -50,9 +50,10 @@
                     android:textSize="36dp" />
             </FrameLayout>
 
+
             <include
                 android:id="@+id/horizontal_view"
-                layout="@layout/activity_recyclerview_horizontal"
+                layout="@layout/layout_recyclerview_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="200dp" />
 

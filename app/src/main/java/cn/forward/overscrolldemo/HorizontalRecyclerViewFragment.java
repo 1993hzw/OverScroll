@@ -23,7 +23,7 @@ public class HorizontalRecyclerViewFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_recyclerview_horizontal, container, false);
+        View view = inflater.inflate(R.layout.layout_recyclerview_horizontal, container, false);
         initHorizontal(view);
         return view;
     }

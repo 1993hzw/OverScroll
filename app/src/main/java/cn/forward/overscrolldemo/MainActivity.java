@@ -18,15 +18,15 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, new VerticalRecyclerViewFragment())
+                            .replace(R.id.fragment_container, new VerticalRecyclerViewFragment())
                             .commitAllowingStateLoss();
                 } else if (tab.getPosition() == 1) {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, new HorizontalRecyclerViewFragment())
+                            .replace(R.id.fragment_container, new HorizontalRecyclerViewFragment())
                             .commitAllowingStateLoss();
                 } else {
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, new NestedScrollFragment())
+                            .replace(R.id.fragment_container, new NestedScrollFragment())
                             .commitAllowingStateLoss();
                 }
 
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new VerticalRecyclerViewFragment())
+                .replace(R.id.fragment_container, new VerticalRecyclerViewFragment())
                 .commitAllowingStateLoss();
 
     }

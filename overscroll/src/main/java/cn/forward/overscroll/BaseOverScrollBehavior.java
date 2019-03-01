@@ -22,12 +22,12 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
     private static final int MAX_BOUNCE_BACK_DURATION_MS = 300;
     private static final int MIN_BOUNCE_BACK_DURATION_MS = 150;
 
-    private final Interpolator mBounceBackInterpolator = new DecelerateInterpolator(0.8f);
+    private final Interpolator mSpringBackInterpolator = new DecelerateInterpolator(0.8f);
 
     private ValueAnimator mSpringBackAnimator;
     private OverScroller mOverScroller;
 
-    private @IOverScrollListener.ScrollDirection
+    private @IOverScrollCallback.ScrollDirection
     int mDirectionToEnd, mDirectionToStart;
 
     public BaseOverScrollBehavior() {
@@ -54,45 +54,48 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
         }
 
         if ((axes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0) {
-            mDirectionToEnd = IOverScrollListener.DIRECTION_DOWN;
-            mDirectionToStart = IOverScrollListener.DIRECTION_UP;
+            mDirectionToEnd = IOverScrollCallback.DIRECTION_DOWN;
+            mDirectionToStart = IOverScrollCallback.DIRECTION_UP;
         } else {
-            mDirectionToEnd = IOverScrollListener.DIRECTION_RIGHT;
-            mDirectionToStart = IOverScrollListener.DIRECTION_LEFT;
+            mDirectionToEnd = IOverScrollCallback.DIRECTION_RIGHT;
+            mDirectionToStart = IOverScrollCallback.DIRECTION_LEFT;
         }
-
-        coordinatorLayout.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public abstract void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child,
                                            View target, int dx, int dy, int[] consumed, int type);
 
-    protected void onNestedPreScrollInner(CoordinatorLayout coordinatorLayout, View child,
-                                          View target, int distance, int[] consumed, int type) {
-        IOverScrollListener overscrollListener = (IOverScrollListener) child;
+    /**
+     * @return consumed distance
+     */
+    protected int onNestedPreScrollInner(CoordinatorLayout coordinatorLayout, View child,
+                                         View target, int distance, int type) {
+        IOverScrollCallback overscrollListener = (IOverScrollCallback) child;
 
         if (distance != 0) {
             int min, max;
             if (distance < 0) { // We're scrolling to end
                 if (!overscrollListener.canScroll(child, getOffset(child), mDirectionToEnd)) {
-                    return;
+                    return 0;
                 }
 
                 min = getOffset(child);
                 max = 0;
             } else {  // We're scrolling to start
                 if (!overscrollListener.canScroll(child, getOffset(child), mDirectionToStart)) {
-                    return;
+                    return 0;
                 }
 
                 min = 0;
                 max = getOffset(child);
             }
             if (min != max) {
-                consumed[1] = scrollWithoutDampingFactor(child, distance, min, max);
+                return scrollWithoutDampingFactor(child, distance, min, max);
             }
         }
+
+        return 0;
     }
 
     @Override
@@ -103,7 +106,11 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
     protected void onNestedScrollInner(CoordinatorLayout coordinatorLayout, View child,
                                        View target, int distanceConsumed, int distanceUnconsumed,
                                        int type) {
-        IOverScrollListener overscrollListener = (IOverScrollListener) child;
+        IOverScrollCallback overscrollListener = (IOverScrollCallback) child;
+
+        if (distanceUnconsumed != 0) {
+            coordinatorLayout.requestDisallowInterceptTouchEvent(true);
+        }
 
         if (distanceUnconsumed < 0) {
             // If the scrolling view is scrolling to end but not consuming, it's probably be at
@@ -180,7 +187,7 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
      *
      */
     private final int computerWithDampingFactor(View child, int distance) {
-        IOverScrollListener overscroll = (IOverScrollListener) child;
+        IOverScrollCallback overscroll = (IOverScrollCallback) child;
         int direction = distance > 0 ? mDirectionToStart : mDirectionToEnd;
         float factor = overscroll.getDampingFactor(child, getOffset(child), direction);
         if (factor == 0) {
@@ -224,12 +231,14 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
         if (mSpringBackAnimator == null) {
             return;
         }
+
         if (mSpringBackAnimator.isRunning()) {
             mSpringBackAnimator.cancel();
         }
     }
 
     public void springBack(final View child) {
+        IOverScrollCallback overScroll = (IOverScrollCallback) child;
 
         int startOffset = getOffset(child);
         if (startOffset == 0) {
@@ -238,17 +247,18 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
 
         if (mSpringBackAnimator == null) {
             mSpringBackAnimator = ValueAnimator.ofInt();
-            mSpringBackAnimator.setInterpolator(mBounceBackInterpolator);
         }
 
         if (mSpringBackAnimator.isStarted()) {
             return;
         }
 
-        // Duration is proportional to the view's size.
+
         float bounceBackDuration = (Math.abs(startOffset) * 1f / getMaxOffset(child)) * MAX_BOUNCE_BACK_DURATION_MS;
-        mSpringBackAnimator.setIntValues(startOffset, 0);
         mSpringBackAnimator.setDuration(Math.max((int) bounceBackDuration, MIN_BOUNCE_BACK_DURATION_MS));
+        mSpringBackAnimator.setInterpolator(mSpringBackInterpolator);
+        overScroll.onSpringBack(child, startOffset, mSpringBackAnimator);
+        mSpringBackAnimator.setIntValues(startOffset, 0);
         mSpringBackAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -260,7 +270,7 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
     }
 
     public void setOffset(View child, int offset) {
-        IOverScrollListener overscrollListener = (IOverScrollListener) child;
+        IOverScrollCallback overscrollListener = (IOverScrollCallback) child;
         updateOffset(child, offset);
         overscrollListener.onOffsetChanged(child, getOffset(child));
     }

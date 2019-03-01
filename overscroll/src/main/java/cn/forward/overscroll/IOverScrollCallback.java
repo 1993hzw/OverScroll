@@ -1,5 +1,6 @@
 package cn.forward.overscroll;
 
+import android.animation.Animator;
 import android.support.annotation.IntDef;
 import android.view.View;
 
@@ -8,7 +9,7 @@ import android.view.View;
  *
  * @author ziwei huang
  */
-public interface IOverScrollListener {
+public interface IOverScrollCallback {
 
     @IntDef({DIRECTION_UP, DIRECTION_DOWN})
     public @interface ScrollDirection {
@@ -21,7 +22,7 @@ public interface IOverScrollListener {
 
     /**
      * @param child           the child view of the CoordinatorLayout this Behavior is associated with. 跟当前behavior绑定的CoordinatorLayout的子view
-     * @param offset  offset the vertical offset for the child view, in px. 子View在垂直位置上的偏移值
+     * @param offset          offset the vertical offset for the child view, in px. 子View在垂直位置上的偏移值
      * @param scrollDirection {@link #DIRECTION_UP} or {@link #DIRECTION_DOWN}. 过度滑动的方向
      * @return true if the child view can scroll in the scroll direction. 返回true表示子view可以在相应的方向上过度滑动
      */
@@ -29,6 +30,7 @@ public interface IOverScrollListener {
 
     /**
      * 最大的惯性滑动的偏移值
+     *
      * @param child
      * @param offset
      * @param scrollDirection
@@ -49,6 +51,7 @@ public interface IOverScrollListener {
 
     /**
      * 产生惯性滑动的最小速度(取绝对值)，小于该速度时会停止惯性滑动.
+     *
      * @param child
      * @param offset
      * @param scrollDirection
@@ -59,9 +62,16 @@ public interface IOverScrollListener {
     /**
      * callback when the child view's offset changed．
      * 子view发生偏移时回调
-     *
      * @param child
      * @param offset
      */
     void onOffsetChanged(View child, int offset);
+
+    /**
+     * callback before springing back
+     * @param child
+     * @param offset
+     * @param animator the spring-back animation. You can change the animator before starting.
+     */
+    void onSpringBack(View child, int offset, Animator animator);
 }

@@ -1,5 +1,6 @@
 package cn.forward.overscroll.view;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -10,22 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.forward.overscroll.IOffsetChangeListener;
-import cn.forward.overscroll.IOverScrollListener;
+import cn.forward.overscroll.IOverScrollCallback;
 import cn.forward.overscroll.IOverScrollView;
 import cn.forward.overscroll.OverScrollVerticalBehavior;
-import cn.forward.overscroll.SimpleOverScrollListener;
+import cn.forward.overscroll.SimpleOverScrollCallback;
 
 /**
  * @author ziwei huang
  */
 @CoordinatorLayout.DefaultBehavior(OverScrollVerticalBehavior.class)
-public class OverScrollScrollView extends NestedScrollView implements IOverScrollListener, IOverScrollView {
+public class OverScrollScrollView extends NestedScrollView implements IOverScrollCallback, IOverScrollView {
 
     private List<IOffsetChangeListener> mOffsetChangeListeners;
-    private IOverScrollListener mDefaultOverScrollListener = new SimpleOverScrollListener();
-    private IOverScrollListener mOverScrollListener = mDefaultOverScrollListener;
+    private IOverScrollCallback mDefaultOverCallback = new SimpleOverScrollCallback();
+    private IOverScrollCallback mOverScrollCallback = mDefaultOverCallback;
 
-    private int mOverScrollOffset;
+    private Integer mOverScrollOffset;
 
     public OverScrollScrollView(Context context) {
         super(context);
@@ -40,8 +41,8 @@ public class OverScrollScrollView extends NestedScrollView implements IOverScrol
     }
 
     public boolean canScroll(View child, int offset, int scrollDirection) {
-        if (mOverScrollListener != null) {
-            return mOverScrollListener.canScroll(child, offset, scrollDirection);
+        if (mOverScrollCallback != null) {
+            return mOverScrollCallback.canScroll(child, offset, scrollDirection);
         }
 
         return false;
@@ -49,8 +50,8 @@ public class OverScrollScrollView extends NestedScrollView implements IOverScrol
 
     @Override
     public int getMaxFlingOffset(View child, int offset, int scrollDirection) {
-        if (mOverScrollListener != null) {
-            return mOverScrollListener.getMaxFlingOffset(child, offset, scrollDirection);
+        if (mOverScrollCallback != null) {
+            return mOverScrollCallback.getMaxFlingOffset(child, offset, scrollDirection);
         }
 
         return 0;
@@ -58,8 +59,8 @@ public class OverScrollScrollView extends NestedScrollView implements IOverScrol
 
     @Override
     public float getDampingFactor(View child, int offset, int scrollDirection) {
-        if (mOverScrollListener != null) {
-            return mOverScrollListener.getDampingFactor(child, offset, scrollDirection);
+        if (mOverScrollCallback != null) {
+            return mOverScrollCallback.getDampingFactor(child, offset, scrollDirection);
         }
 
         return 0;
@@ -67,8 +68,8 @@ public class OverScrollScrollView extends NestedScrollView implements IOverScrol
 
     @Override
     public int getMinFlingVelocity(View child, int offset, int scrollDirection) {
-        if (mOverScrollListener != null) {
-            return mOverScrollListener.getMinFlingVelocity(child, offset, scrollDirection);
+        if (mOverScrollCallback != null) {
+            return mOverScrollCallback.getMinFlingVelocity(child, offset, scrollDirection);
         }
 
         return 0;
@@ -78,8 +79,8 @@ public class OverScrollScrollView extends NestedScrollView implements IOverScrol
     public void onOffsetChanged(View child, int offset) {
         mOverScrollOffset = offset;
 
-        if (mOverScrollListener != null) {
-            mOverScrollListener.onOffsetChanged(child, offset);
+        if (mOverScrollCallback != null) {
+            mOverScrollCallback.onOffsetChanged(child, offset);
         }
 
         for (int i = 0; i < mOffsetChangeListeners.size(); i++) {
@@ -88,20 +89,24 @@ public class OverScrollScrollView extends NestedScrollView implements IOverScrol
     }
 
     @Override
-    public void setOverScrollListener(final IOverScrollListener overScrollListener) {
-        mOverScrollListener = overScrollListener;
-        if (overScrollListener != null) {
-            overScrollListener.onOffsetChanged(this, getOverScrollOffset());
+    public void onSpringBack(View child, int offset, Animator animator) {
+        if (mOverScrollCallback != null) {
+            mOverScrollCallback.onSpringBack(child, offset, animator);
         }
     }
 
     @Override
-    public IOverScrollListener getOverScrollListener() {
-        return mOverScrollListener;
+    public void setOverScrollCallback(final IOverScrollCallback overScrollCallback) {
+        mOverScrollCallback = overScrollCallback;
     }
 
-    public IOverScrollListener getDefaultOverScrollListener() {
-        return mDefaultOverScrollListener;
+    @Override
+    public IOverScrollCallback getOverScrollCallback() {
+        return mOverScrollCallback;
+    }
+
+    public IOverScrollCallback getDefaultOverCallback() {
+        return mDefaultOverCallback;
     }
 
     @Override
@@ -112,7 +117,6 @@ public class OverScrollScrollView extends NestedScrollView implements IOverScrol
 
         if (listener != null && !mOffsetChangeListeners.contains(listener)) {
             mOffsetChangeListeners.add(listener);
-            listener.onOffsetChanged(this, getOverScrollOffset());
         }
     }
 

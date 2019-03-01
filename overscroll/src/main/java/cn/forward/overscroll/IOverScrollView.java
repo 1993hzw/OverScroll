@@ -5,9 +5,9 @@ package cn.forward.overscroll;
  */
 public interface IOverScrollView {
 
-    public void setOverScrollListener(IOverScrollListener overScrollListener);
+    public void setOverScrollCallback(IOverScrollCallback overScrollCallback);
 
-    public IOverScrollListener getOverScrollListener();
+    public IOverScrollCallback getOverScrollCallback();
 
     public void addOffsetChangeListener(IOffsetChangeListener listener);
 

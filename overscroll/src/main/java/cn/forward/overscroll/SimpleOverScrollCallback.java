@@ -1,14 +1,21 @@
 package cn.forward.overscroll;
 
+import android.animation.Animator;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
 
 /**
  * @author ziwei huang
  */
-public class SimpleOverScrollListener implements IOverScrollListener {
+public class SimpleOverScrollCallback implements IOverScrollCallback {
+
+    private static final int MAX_BOUNCE_BACK_DURATION_MS = 300;
+    private static final int MIN_BOUNCE_BACK_DURATION_MS = 150;
 
     private int mMinFlingVelocity;
+    private Interpolator mInterpolator;
 
     @Override
     public boolean canScroll(View child, int offset, @ScrollDirection int scrollDirection) {
@@ -35,13 +42,18 @@ public class SimpleOverScrollListener implements IOverScrollListener {
     @Override
     public int getMinFlingVelocity(View child, int offset, int scrollDirection) {
         if (mMinFlingVelocity <= 0) {
-            mMinFlingVelocity = ViewConfiguration.get(child.getContext()).getScaledMinimumFlingVelocity() * 18;
+            mMinFlingVelocity = ViewConfiguration.get(child.getContext()).getScaledMinimumFlingVelocity() * 15;
         }
         return mMinFlingVelocity;
     }
 
     @Override
     public void onOffsetChanged(View child, int offset) {
+
+    }
+
+    @Override
+    public void onSpringBack(View child, int offset, Animator animator) {
 
     }
 }

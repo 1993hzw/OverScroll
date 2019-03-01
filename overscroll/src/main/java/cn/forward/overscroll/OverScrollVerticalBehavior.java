@@ -29,7 +29,7 @@ public class OverScrollVerticalBehavior extends BaseOverScrollBehavior {
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child,
                                   View target, int dx, int dy, int[] consumed, int type) {
-        onNestedPreScrollInner(coordinatorLayout, child, target, dy, consumed, type);
+        consumed[1] = onNestedPreScrollInner(coordinatorLayout, child, target, dy, type);
     }
 
     @Override

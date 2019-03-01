@@ -18,7 +18,7 @@ public class NestedScrollFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.activity_scrollview, container, false);
+        View view = inflater.inflate(R.layout.layout_scrollview, container, false);
 
         final View iconHeaderView = view.findViewById(R.id.icon_header);
         final View iconFooterView = view.findViewById(R.id.icon_footer);
@@ -57,6 +57,5 @@ public class NestedScrollFragment extends Fragment {
 
         return view;
     }
-
 
 }
