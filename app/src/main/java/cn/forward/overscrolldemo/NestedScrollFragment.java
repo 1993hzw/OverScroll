@@ -54,7 +54,7 @@ public class NestedScrollFragment extends Fragment {
         });
 
         HorizontalRecyclerViewFragment.initHorizontal(view.findViewById(R.id.horizontal_view));
-
+//        VerticalRecyclerViewFragment.initVerticalOverScroll(view.findViewById(R.id.vertical_view));
         return view;
     }
 

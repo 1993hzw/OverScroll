@@ -1,6 +1,5 @@
 package cn.forward.overscroll;
 
-import android.animation.Animator;
 import android.support.annotation.IntDef;
 import android.view.View;
 
@@ -21,57 +20,68 @@ public interface IOverScrollCallback {
     public static final int DIRECTION_RIGHT = 1 << 3;
 
     /**
+     * @param overScroll
      * @param child           the child view of the CoordinatorLayout this Behavior is associated with. 跟当前behavior绑定的CoordinatorLayout的子view
-     * @param offset          offset the vertical offset for the child view, in px. 子View在垂直位置上的偏移值
      * @param scrollDirection {@link #DIRECTION_UP} or {@link #DIRECTION_DOWN}. 过度滑动的方向
      * @return true if the child view can scroll in the scroll direction. 返回true表示子view可以在相应的方向上过度滑动
      */
-    boolean canScroll(View child, int offset, @ScrollDirection int scrollDirection);
+    boolean canScroll(IOverScroll overScroll, View child, @ScrollDirection int scrollDirection);
 
     /**
      * 最大的惯性滑动的偏移值
      *
+     * @param overScroll
      * @param child
-     * @param offset
      * @param scrollDirection
      * @return max offsets when fling, in px
      */
-    int getMaxFlingOffset(View child, int offset, @ScrollDirection int scrollDirection);
+    int getMaxFlingOffset(IOverScroll overScroll, View child, @ScrollDirection int scrollDirection);
 
     /**
      * Damping factor, the larger the value, the harder it is to scroll
      * 阻尼因子,值越大则摩擦越大越难滑动
      *
+     * @param overScroll
      * @param child
-     * @param offset
      * @param scrollDirection
      * @return Damping factor when scrolling, should be positive. Only take effect when you offset the child view away.
      */
-    float getDampingFactor(View child, int offset, @ScrollDirection int scrollDirection);
+    float getDampingFactor(IOverScroll overScroll, View child, @ScrollDirection int scrollDirection);
 
     /**
      * 产生惯性滑动的最小速度(取绝对值)，小于该速度时会停止惯性滑动.
      *
+     * @param overScroll
      * @param child
-     * @param offset
      * @param scrollDirection
      * @return Minimum velocity (the absolute value) to occur a fling,  in pixels per second. If the velocity is less than the min, the child view will stop the fling
      */
-    int getMinFlingVelocity(View child, int offset, @ScrollDirection int scrollDirection);
+    int getMinFlingVelocity(IOverScroll overScroll, View child, @ScrollDirection int scrollDirection);
 
     /**
      * callback when the child view's offset changed．
      * 子view发生偏移时回调
+     *
+     * @param overScroll
      * @param child
      * @param offset
      */
-    void onOffsetChanged(View child, int offset);
+    void onOffsetChanged(IOverScroll overScroll, View child, int offset);
 
     /**
      * callback before springing back
+     *
+     * @param overScroll
      * @param child
-     * @param offset
-     * @param animator the spring-back animation. You can change the animator before starting.
+     * @return true if you have consumed the event, false if you haven't. The default implementation always returns false.
      */
-    void onSpringBack(View child, int offset, Animator animator);
+    boolean onSpringBack(IOverScroll overScroll, View child);
+
+    /**
+     * callback before stop springing back
+     *
+     * @param overScroll
+     * @param child
+     */
+    void onStopSpringingBack(IOverScroll overScroll, View child);
 }

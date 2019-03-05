@@ -7,6 +7,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.math.MathUtils;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -17,7 +18,7 @@ import android.widget.OverScroller;
  *
  * @author ziwei huang
  */
-public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<View> {
+public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<View> implements IOverScroll {
 
     private static final int MAX_BOUNCE_BACK_DURATION_MS = 300;
     private static final int MIN_BOUNCE_BACK_DURATION_MS = 150;
@@ -43,8 +44,12 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
 
     @Override
     public void onNestedScrollAccepted(@NonNull CoordinatorLayout coordinatorLayout, @NonNull View child, @NonNull View directTargetChild, @NonNull View target, int axes, int type) {
+        if (child != target) {
+            return;
+        }
+
         if (type == ViewCompat.TYPE_TOUCH) {
-            stopSpringBack();
+            stopSpringBack(child);
         }
 
         if (type == ViewCompat.TYPE_TOUCH) {
@@ -71,19 +76,23 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
      */
     protected int onNestedPreScrollInner(CoordinatorLayout coordinatorLayout, View child,
                                          View target, int distance, int type) {
+        if (child != target) {
+            return 0;
+        }
+
         IOverScrollCallback overscrollListener = (IOverScrollCallback) child;
 
         if (distance != 0) {
             int min, max;
             if (distance < 0) { // We're scrolling to end
-                if (!overscrollListener.canScroll(child, getOffset(child), mDirectionToEnd)) {
+                if (!overscrollListener.canScroll(this, child, mDirectionToEnd)) {
                     return 0;
                 }
 
                 min = getOffset(child);
                 max = 0;
             } else {  // We're scrolling to start
-                if (!overscrollListener.canScroll(child, getOffset(child), mDirectionToStart)) {
+                if (!overscrollListener.canScroll(this, child, mDirectionToStart)) {
                     return 0;
                 }
 
@@ -106,9 +115,13 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
     protected void onNestedScrollInner(CoordinatorLayout coordinatorLayout, View child,
                                        View target, int distanceConsumed, int distanceUnconsumed,
                                        int type) {
+        if (child != target) {
+            return;
+        }
+
         IOverScrollCallback overscrollListener = (IOverScrollCallback) child;
 
-        if (distanceUnconsumed != 0) {
+        if (distanceUnconsumed != 0) { // fix nested scroll bugs
             coordinatorLayout.requestDisallowInterceptTouchEvent(true);
         }
 
@@ -116,38 +129,39 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
             // If the scrolling view is scrolling to end but not consuming, it's probably be at
             // the top of it's content
 
-            if (!overscrollListener.canScroll(child, getOffset(child), mDirectionToEnd)) {
+            if (!overscrollListener.canScroll(this, child, mDirectionToEnd)) {
                 return;
             }
 
             if (type == ViewCompat.TYPE_TOUCH) {
                 scroll(child, distanceUnconsumed, 0, getMaxOffset(child));
             } else { // fling
-                if ((mOverScroller.computeScrollOffset()
-                        && Math.abs(mOverScroller.getCurrVelocity()) < Math.abs(overscrollListener.getMinFlingVelocity(child, getOffset(child), mDirectionToEnd)))  // too slow
-                        || getOffset(child) >= overscrollListener.getMaxFlingOffset(child, getOffset(child), mDirectionToEnd)) { // reach edge
+                if ((mOverScroller != null && mOverScroller.computeScrollOffset()
+                        && Math.abs(mOverScroller.getCurrVelocity()) < Math.abs(overscrollListener.getMinFlingVelocity(this, child, mDirectionToEnd)))  // too slow
+                        ||
+                        getOffset(child) >= overscrollListener.getMaxFlingOffset(this, child, mDirectionToEnd)) { // reach edge
                     ViewCompat.stopNestedScroll(target, ViewCompat.TYPE_NON_TOUCH);
                 } else {
-                    scroll(child, distanceUnconsumed, // slow down
-                            getOffset(child), overscrollListener.getMaxFlingOffset(child, getOffset(child), mDirectionToEnd));
+                    scroll(child, distanceUnconsumed,
+                            getOffset(child), overscrollListener.getMaxFlingOffset(this, child, mDirectionToEnd));
                 }
             }
 
         } else if (distanceUnconsumed > 0) {
-            if (!overscrollListener.canScroll(child, getOffset(child), mDirectionToStart)) {
+            if (!overscrollListener.canScroll(this, child, mDirectionToStart)) {
                 return;
             }
 
             if (type == ViewCompat.TYPE_TOUCH) {
                 scroll(child, distanceUnconsumed, getMinOffset(child), 0);
             } else { // fling
-                if ((mOverScroller.computeScrollOffset()
-                        && Math.abs(mOverScroller.getCurrVelocity()) < overscrollListener.getMinFlingVelocity(child, getOffset(child), mDirectionToStart)) // too slow
-                        || getOffset(child) <= overscrollListener.getMaxFlingOffset(child, getOffset(child), mDirectionToStart)) { // reach edge
+                if ((mOverScroller != null && mOverScroller.computeScrollOffset()
+                        && Math.abs(mOverScroller.getCurrVelocity()) < overscrollListener.getMinFlingVelocity(this, child, mDirectionToStart)) // too slow
+                        || getOffset(child) <= overscrollListener.getMaxFlingOffset(this, child, mDirectionToStart)) { // reach edge
                     ViewCompat.stopNestedScroll(target, ViewCompat.TYPE_NON_TOUCH);
                 } else {
                     scroll(child, distanceUnconsumed,  // slow down
-                            overscrollListener.getMaxFlingOffset(child, getOffset(child), mDirectionToStart), getOffset(child));
+                            overscrollListener.getMaxFlingOffset(this, child, mDirectionToStart), getOffset(child));
                 }
             }
         }
@@ -157,29 +171,44 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
     public abstract boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, View child, View target, float velocityX, float velocityY);
 
     protected boolean onNestedPreFlingInner(CoordinatorLayout coordinatorLayout, View child, View target, float velocity) {
-        if (child == target) {
-            if (mOverScroller == null) {
-                mOverScroller = new OverScroller(coordinatorLayout.getContext());
-            }
-            /* velocityX = 0, velocityY = velocity
-                        or
-               velocityX = velocity, velocityY = 0
-             */
-            mOverScroller.fling(0, 0, 0, (int) velocity, 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        if (child != target) {
+            return false;
         }
+
+        if (getOffset(child) != 0) { // 越界后不能产生惯性滑动，否则造成越界过程中child内部同时也发生滑动
+            // No fling can occur after crossing the boundary, otherwise the fling of the child will also occur during the crossing process.
+            ViewCompat.stopNestedScroll(target, ViewCompat.TYPE_NON_TOUCH);
+            return true; // must true
+        }
+
+        if (mOverScroller == null) {
+            mOverScroller = new OverScroller(coordinatorLayout.getContext());
+        }
+        /* velocityX = 0, velocityY = velocity
+                    or
+           velocityX = velocity, velocityY = 0
+         */
+        mOverScroller.fling(0, 0, 0, (int) velocity, 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
         return false;
     }
 
     @Override
     public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, View child,
                                    View target, int type) {
+        if (child != target) {
+            return;
+        }
+
         if (type == ViewCompat.TYPE_TOUCH) { // touching
             if (getOffset(child) != 0) { // and out of bound
-                ViewCompat.stopNestedScroll(target, ViewCompat.TYPE_NON_TOUCH);
+                ViewCompat.stopNestedScroll(child, ViewCompat.TYPE_NON_TOUCH);
                 springBack(child);
             }
         } else {
-            springBack(child);
+            if (getOffset(child) != 0) {
+                springBack(child);
+            }
         }
     }
 
@@ -189,7 +218,7 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
     private final int computerWithDampingFactor(View child, int distance) {
         IOverScrollCallback overscroll = (IOverScrollCallback) child;
         int direction = distance > 0 ? mDirectionToStart : mDirectionToEnd;
-        float factor = overscroll.getDampingFactor(child, getOffset(child), direction);
+        float factor = overscroll.getDampingFactor(this, child, direction);
         if (factor == 0) {
             factor = 1;
         }
@@ -227,21 +256,29 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
         return consumed;
     }
 
-    public void stopSpringBack() {
-        if (mSpringBackAnimator == null) {
-            return;
+    @Override
+    public void stopSpringBack(View child) {
+        if (mSpringBackAnimator != null) {
+            if (mSpringBackAnimator.isRunning()) {
+                mSpringBackAnimator.cancel();
+            }
         }
 
-        if (mSpringBackAnimator.isRunning()) {
-            mSpringBackAnimator.cancel();
-        }
+        IOverScrollCallback overScrollCallback = (IOverScrollCallback) child;
+        overScrollCallback.onStopSpringingBack(this, child);
+
     }
 
+    @Override
     public void springBack(final View child) {
         IOverScrollCallback overScroll = (IOverScrollCallback) child;
 
         int startOffset = getOffset(child);
         if (startOffset == 0) {
+            return;
+        }
+
+        if (overScroll.onSpringBack(this, child)) {
             return;
         }
 
@@ -257,7 +294,6 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
         float bounceBackDuration = (Math.abs(startOffset) * 1f / getMaxOffset(child)) * MAX_BOUNCE_BACK_DURATION_MS;
         mSpringBackAnimator.setDuration(Math.max((int) bounceBackDuration, MIN_BOUNCE_BACK_DURATION_MS));
         mSpringBackAnimator.setInterpolator(mSpringBackInterpolator);
-        overScroll.onSpringBack(child, startOffset, mSpringBackAnimator);
         mSpringBackAnimator.setIntValues(startOffset, 0);
         mSpringBackAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -269,18 +305,12 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
         mSpringBackAnimator.start();
     }
 
+    @Override
     public void setOffset(View child, int offset) {
         IOverScrollCallback overscrollListener = (IOverScrollCallback) child;
         updateOffset(child, offset);
-        overscrollListener.onOffsetChanged(child, getOffset(child));
+        overscrollListener.onOffsetChanged(this, child, getOffset(child));
     }
 
     protected abstract void updateOffset(View child, int offset);
-
-    public abstract int getOffset(View child);
-
-    public abstract int getMaxOffset(View child);
-
-    public abstract int getMinOffset(View child);
-
 }

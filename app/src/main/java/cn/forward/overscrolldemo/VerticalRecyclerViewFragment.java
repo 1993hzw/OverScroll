@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.forward.overscroll.IOffsetChangeListener;
 import cn.forward.overscroll.IOverScrollView;
@@ -23,10 +24,12 @@ public class VerticalRecyclerViewFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
         View view = inflater.inflate(R.layout.layout_recyclerview_vertical, container, false);
+        initVerticalOverScroll(view);
+        return view;
+    }
 
+    public static void initVerticalOverScroll(View view) {
         final View iconHeaderView = view.findViewById(R.id.icon_header);
         final View iconFooterView = view.findViewById(R.id.icon_footer);
 
@@ -62,7 +65,7 @@ public class VerticalRecyclerViewFragment extends Fragment {
 
 
         RecyclerView recyclerView = view.findViewById(R.id.overscroll_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(new RecyclerView.Adapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -73,12 +76,19 @@ public class VerticalRecyclerViewFragment extends Fragment {
             }
 
             @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
                 TextView textView = holder.itemView.findViewById(R.id.text);
-                textView.setText("" + (1+position));
+                textView.setText("" + (1 + position));
 
                 View container = holder.itemView.findViewById(R.id.container);
                 container.setBackgroundColor(COLORS[position % COLORS.length]);
+
+                container.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(holder.itemView.getContext(), "" + (position + 1), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -87,6 +97,5 @@ public class VerticalRecyclerViewFragment extends Fragment {
             }
         });
 
-        return view;
     }
 }

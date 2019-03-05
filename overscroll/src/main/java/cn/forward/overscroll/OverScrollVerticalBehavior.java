@@ -23,6 +23,10 @@ public class OverScrollVerticalBehavior extends BaseOverScrollBehavior {
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout parent, View child,
                                        View directTargetChild, View target, int nestedScrollAxes, int type) {
+        if (child != target) {
+            return false;
+        }
+
         return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
     }
 
