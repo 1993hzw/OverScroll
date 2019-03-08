@@ -6,6 +6,10 @@ Use CoordinatorLayout+Behavior to achieve elastic scrolling and inertial scrolli
 
 利用CoordinatorLayout+Behavior实现弹性滚动和惯性滚动效果(类似微信首页).
 
+![vertical over-scroll](https://raw.githubusercontent.com/1993hzw/common/master/overscoll/overscroll.gif)
+![horizontal over-scroll](https://raw.githubusercontent.com/1993hzw/common/master/overscoll/overscroll2.gif)
+![nested over-scroll](https://raw.githubusercontent.com/1993hzw/common/master/overscoll/overscroll3.gif)
+
 # Usage 用法
 
 #### Gradle 
@@ -19,7 +23,7 @@ allprojects {
 }
  
 dependencies {
-    implementation 'com.github.1993hzw:OverScroll:1.0'
+    implementation 'com.github.1993hzw:OverScroll:1.1'
 }
 ```
 
