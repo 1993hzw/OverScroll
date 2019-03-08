@@ -24,9 +24,13 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new HorizontalRecyclerViewFragment())
                             .commitAllowingStateLoss();
-                } else {
+                } else if(tab.getPosition() == 2){
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new NestedScrollFragment())
+                            .commitAllowingStateLoss();
+                }else{
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new TestFragment())
                             .commitAllowingStateLoss();
                 }
 

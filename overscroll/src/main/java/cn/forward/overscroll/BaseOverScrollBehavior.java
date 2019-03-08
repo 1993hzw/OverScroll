@@ -7,7 +7,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.math.MathUtils;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -136,10 +135,10 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
             if (type == ViewCompat.TYPE_TOUCH) {
                 scroll(child, distanceUnconsumed, 0, getMaxOffset(child));
             } else { // fling
-                if ((mOverScroller != null && mOverScroller.computeScrollOffset()
-                        && Math.abs(mOverScroller.getCurrVelocity()) < Math.abs(overscrollListener.getMinFlingVelocity(this, child, mDirectionToEnd)))  // too slow
-                        ||
-                        getOffset(child) >= overscrollListener.getMaxFlingOffset(this, child, mDirectionToEnd)) { // reach edge
+                if (mOverScroller == null
+                        || !mOverScroller.computeScrollOffset()
+                        || Math.abs(mOverScroller.getCurrVelocity()) < Math.abs(overscrollListener.getMinFlingVelocity(this, child, mDirectionToEnd))  // too slow
+                        || getOffset(child) >= overscrollListener.getMaxFlingOffset(this, child, mDirectionToEnd)) { // reach edge
                     ViewCompat.stopNestedScroll(target, ViewCompat.TYPE_NON_TOUCH);
                 } else {
                     scroll(child, distanceUnconsumed,
@@ -155,8 +154,9 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
             if (type == ViewCompat.TYPE_TOUCH) {
                 scroll(child, distanceUnconsumed, getMinOffset(child), 0);
             } else { // fling
-                if ((mOverScroller != null && mOverScroller.computeScrollOffset()
-                        && Math.abs(mOverScroller.getCurrVelocity()) < overscrollListener.getMinFlingVelocity(this, child, mDirectionToStart)) // too slow
+                if (mOverScroller == null
+                        || !mOverScroller.computeScrollOffset()
+                        || Math.abs(mOverScroller.getCurrVelocity()) < Math.abs(overscrollListener.getMinFlingVelocity(this, child, mDirectionToStart))  // too slow
                         || getOffset(child) <= overscrollListener.getMaxFlingOffset(this, child, mDirectionToStart)) { // reach edge
                     ViewCompat.stopNestedScroll(target, ViewCompat.TYPE_NON_TOUCH);
                 } else {
@@ -173,12 +173,6 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
     protected boolean onNestedPreFlingInner(CoordinatorLayout coordinatorLayout, View child, View target, float velocity) {
         if (child != target) {
             return false;
-        }
-
-        if (getOffset(child) != 0) { // 越界后不能产生惯性滑动，否则造成越界过程中child内部同时也发生滑动
-            // No fling can occur after crossing the boundary, otherwise the fling of the child will also occur during the crossing process.
-            ViewCompat.stopNestedScroll(target, ViewCompat.TYPE_NON_TOUCH);
-            return true; // must true
         }
 
         if (mOverScroller == null) {
@@ -202,8 +196,9 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
 
         if (type == ViewCompat.TYPE_TOUCH) { // touching
             if (getOffset(child) != 0) { // and out of bound
-                ViewCompat.stopNestedScroll(child, ViewCompat.TYPE_NON_TOUCH);
-                springBack(child);
+                if( mOverScroller == null || !mOverScroller.computeScrollOffset()) { // no fling
+                    springBack(child);
+                }
             }
         } else {
             if (getOffset(child) != 0) {

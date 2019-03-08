@@ -14,10 +14,10 @@ public interface IOverScrollCallback {
     public @interface ScrollDirection {
     }
 
-    public static final int DIRECTION_UP = 1 << 0;
-    public static final int DIRECTION_DOWN = 1 << 1;
-    public static final int DIRECTION_LEFT = 1 << 2;
-    public static final int DIRECTION_RIGHT = 1 << 3;
+    public static final int DIRECTION_UP = 1 << 0; // Direction to start
+    public static final int DIRECTION_DOWN = 1 << 1; // Direction to end
+    public static final int DIRECTION_LEFT = 1 << 2; // Direction to start
+    public static final int DIRECTION_RIGHT = 1 << 3; // Direction to end
 
     /**
      * @param overScroll

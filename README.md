@@ -97,3 +97,4 @@ overScrollView.addOffsetChangeListener(new IOffsetChangeListener() {
     }
 });
 ```
+(The default `IOverScrollCallback` is [SimpleOverScrollCallback](https://github.com/1993hzw/OverScroll/blob/master/overscroll/src/main/java/cn/forward/overscroll/SimpleOverScrollCallback.java))
