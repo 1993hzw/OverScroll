@@ -279,6 +279,13 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
 
         if (mSpringBackAnimator == null) {
             mSpringBackAnimator = ValueAnimator.ofInt();
+            mSpringBackAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    int value = (int) animation.getAnimatedValue();
+                    setOffset(child, value);
+                }
+            });
         }
 
         if (mSpringBackAnimator.isStarted()) {
@@ -290,13 +297,6 @@ public abstract class BaseOverScrollBehavior extends CoordinatorLayout.Behavior<
         mSpringBackAnimator.setDuration(Math.max((int) bounceBackDuration, MIN_BOUNCE_BACK_DURATION_MS));
         mSpringBackAnimator.setInterpolator(mSpringBackInterpolator);
         mSpringBackAnimator.setIntValues(startOffset, 0);
-        mSpringBackAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int value = (int) animation.getAnimatedValue();
-                setOffset(child, value);
-            }
-        });
         mSpringBackAnimator.start();
     }
 

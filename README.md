@@ -23,7 +23,7 @@ allprojects {
 }
  
 dependencies {
-    implementation 'com.github.1993hzw:OverScroll:1.1'
+    implementation 'com.github.1993hzw:OverScroll:1.1.1'
 }
 ```
 
